@@ -11,9 +11,10 @@
 
 import os
 import pprint
+import random
+import datetime
 
 import google.oauth2.credentials
-
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -43,9 +44,19 @@ def list_photos(service):
   print(len(results))
   print(len(results["mediaItems"]))
 
-if __name__ == '__main__':
+def random_year_month():
+    currentYear = datetime.datetime.now().year
+    randYear = random.randint(2012, currentYear)
+    if (randYear == currentYear):
+        maxMonth = datetime.datetime.now().month
+    else:
+        maxMonth = 12
+    randMonth = random.randint(1, maxMonth)
+    return (randYear, randMonth)
+
+# if __name__ == '__main__':
   # When running locally, disable OAuthlib's HTTPs verification. When
   # running in production *do not* leave this option enabled.
-  os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-  service = get_authenticated_service()
-  list_photos(service)
+#   os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+#   service = get_authenticated_service()
+#   list_photos(service)
