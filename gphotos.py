@@ -66,6 +66,25 @@ def random_day_with_photos(service, year, month):
     randomDay = random.sample(creationDays, 1)[0]
     return randomDay
 
+def links_of_day(service, year, month, day):
+    searchBody = {
+        "filters": {
+            "dateFilter": {
+            "dates": [
+                {
+                "month": month,
+                "year": year,
+                "day": day
+                }
+            ]
+            }
+        },
+        "pageSize": 100
+        }
+    results = service.mediaItems().search(body=searchBody).execute()
+    links = [x["productUrl"] for x in results["mediaItems"]]
+    return links
+
 if __name__ == '__main__':
 #   When running locally, disable OAuthlib's HTTPs verification. When
 #   running in production *do not* leave this option enabled.
