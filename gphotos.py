@@ -1,14 +1,3 @@
-# import requests
-# from google_auth_oauthlib.flow import InstalledAppFlow
-
-# flow = InstalledAppFlow.from_client_secrets_file(
-#     'client_secret.json',
-#     scopes=['https://www.googleapis.com/auth/drive.metadata.readonly'])
-    
-# x = requests.get('https://photoslibrary.googleapis.com/v1/mediaItems')
-# print(x.status_code)
-
-
 import os
 import pprint
 import random
@@ -54,9 +43,32 @@ def random_year_month():
     randMonth = random.randint(1, maxMonth)
     return (randYear, randMonth)
 
-# if __name__ == '__main__':
-  # When running locally, disable OAuthlib's HTTPs verification. When
-  # running in production *do not* leave this option enabled.
-#   os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-#   service = get_authenticated_service()
-#   list_photos(service)
+def random_day_with_photos(service, year, month):
+    searchBody = {
+        "filters": {
+            "dateFilter": {
+            "dates": [
+                {
+                "month": month,
+                "year": year,
+                "day": 0
+                }
+            ]
+            }
+        },
+        "pageSize": 100
+        }
+    results = service.mediaItems().search(body=searchBody).execute()
+
+    creationTimesStrings = [x["mediaMetadata"]["creationTime"] for x in results["mediaItems"]]
+    # Builds a set of all days in integer form
+    creationDays = set(map(lambda x : int(x[8:10]), creationTimesStrings))
+    randomDay = random.sample(creationDays, 1)[0]
+    return randomDay
+
+if __name__ == '__main__':
+#   When running locally, disable OAuthlib's HTTPs verification. When
+#   running in production *do not* leave this option enabled.
+  os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '0'
+  service = get_authenticated_service()
+  list_photos(service)
