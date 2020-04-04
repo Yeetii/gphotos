@@ -22,16 +22,16 @@ API_SERVICE_NAME = 'photoslibrary'
 API_VERSION = 'v1'
 
 def get_authenticated_service():
-  flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
-  credentials = flow.run_console()
-  return build(API_SERVICE_NAME, API_VERSION, credentials = credentials)
+    flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRETS_FILE, SCOPES)
+    credentials = flow.run_console()
+    return build(API_SERVICE_NAME, API_VERSION, credentials = credentials)
 
 def list_photos(service):
-  results = service.mediaItems().list().execute()
+    results = service.mediaItems().list().execute()
 
-  pp.pprint(results)
-  print(len(results))
-  print(len(results["mediaItems"]))
+    pp.pprint(results)
+    print(len(results))
+    print(len(results["mediaItems"]))
 
 def random_year_month():
     currentYear = datetime.datetime.now().year
@@ -85,9 +85,21 @@ def links_of_day(service, year, month, day):
     links = [x["productUrl"] for x in results["mediaItems"]]
     return links
 
+def open_links(links):
+    # Tried using the webbrowser package but on my computer the firefox it opens doesn't have my logins?
+    # Turning to list needed because map gives a lazy iterable
+    list(map (lambda x : os.system("xdg-open " + x), links))
+
+
+def open_links_of_random_day(service):
+    (year, month) = random_year_month()
+    day = random_day_with_photos(service, year, month)
+    links = links_of_day(service, year, month, day)
+    open_links(links)
+
 if __name__ == '__main__':
-#   When running locally, disable OAuthlib's HTTPs verification. When
-#   running in production *do not* leave this option enabled.
-  os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '0'
-  service = get_authenticated_service()
-  list_photos(service)
+    #   When running locally, disable OAuthlib's HTTPs verification. When
+    #   running in production *do not* leave this option enabled.
+    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+    service = get_authenticated_service()
+    open_links_of_random_day(service)
