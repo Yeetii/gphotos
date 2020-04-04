@@ -2,6 +2,7 @@ import os
 import pprint
 import random
 import datetime
+import pickle
 
 import google.oauth2.credentials
 from googleapiclient.discovery import build
@@ -97,9 +98,25 @@ def open_links_of_random_day(service):
     links = links_of_day(service, year, month, day)
     open_links(links)
 
+def open_pickle():
+    with open("service.file", "rb") as f:
+        service = pickle.load(f)
+        return service
+
+def save_pickle(service):
+    with open("service.file", "wb") as f:
+        pickle.dump(service, f, pickle.HIGHEST_PROTOCOL)
+
 if __name__ == '__main__':
     #   When running locally, disable OAuthlib's HTTPs verification. When
     #   running in production *do not* leave this option enabled.
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    service = get_authenticated_service()
-    open_links_of_random_day(service)
+    try:
+        service = open_pickle()
+        open_links_of_random_day(service)
+    except:
+        service = get_authenticated_service()
+        save_pickle(service)
+        open_links_of_random_day(service)
+    
+    
