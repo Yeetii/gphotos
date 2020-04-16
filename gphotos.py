@@ -14,7 +14,10 @@ pp = pprint.PrettyPrinter(indent=2)
 # The CLIENT_SECRETS_FILE variable specifies the name of a file that contains
 # the OAuth 2.0 information for this application, including its client_id and
 # client_secret.
-CLIENT_SECRETS_FILE = "credentials.json"
+dir = os.path.dirname(__file__)
+CLIENT_SECRETS_FILE = os.path.join(dir, 'credentials.json')
+SERVICE_FILE = os.path.join(dir, 'service.file')
+# CLIENT_SECRETS_FILE = "credentials.json"
 
 # This access scope grants read-only access to the authenticated user's Drive
 # account.
@@ -99,12 +102,12 @@ def open_links_of_random_day(service):
     open_links(links)
 
 def open_pickle():
-    with open("service.file", "rb") as f:
+    with open(SERVICE_FILE, "rb") as f:
         service = pickle.load(f)
         return service
 
 def save_pickle(service):
-    with open("service.file", "wb") as f:
+    with open(SERVICE_FILE, "wb") as f:
         pickle.dump(service, f, pickle.HIGHEST_PROTOCOL)
 
 if __name__ == '__main__':
@@ -118,5 +121,3 @@ if __name__ == '__main__':
         service = get_authenticated_service()
         save_pickle(service)
         open_links_of_random_day(service)
-    
-    
